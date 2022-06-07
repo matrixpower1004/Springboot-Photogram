@@ -1,0 +1,26 @@
+package com.matrix.photogram.handler;
+
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.matrix.photogram.handler.ex.CustomValidationException;
+import com.matrix.photogram.util.Script;
+import com.matrix.photogram.web.dto.CMRespDto;
+
+@RestController
+@ControllerAdvice // 모든 컨트롤러에서 발생하는 에러를 낚아챔
+public class ControllerExceptionHandler {
+	
+	// https://jeong-pro.tistory.com/195 -> ExceptionHandler, ControllerAdvice
+	@ExceptionHandler(CustomValidationException.class)
+	public String validationException(CustomValidationException e) { // 제네릭타입 리턴할때는 ?로 적는게 간편함
+		// CMrespDto, Script비교
+		// 1.클라이언트에게 응답할 때는 Script가 좋음.
+		// 2.Ajax통신 - CMRespDto
+		// 3.Android통신 - CMRespDto
+		return Script.back(e.gerErrorMap().toString());
+	}
+}
