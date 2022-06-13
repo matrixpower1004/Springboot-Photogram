@@ -1,11 +1,12 @@
 package com.matrix.photogram.handler;
 
-import java.util.Map;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.matrix.photogram.handler.ex.CustomValidationApiException;
 import com.matrix.photogram.handler.ex.CustomValidationException;
 import com.matrix.photogram.util.Script;
 import com.matrix.photogram.web.dto.CMRespDto;
@@ -22,5 +23,11 @@ public class ControllerExceptionHandler {
 		// 2.Ajax통신 - CMRespDto
 		// 3.Android통신 - CMRespDto
 		return Script.back(e.gerErrorMap().toString());
+	}
+	
+	@ExceptionHandler(CustomValidationApiException.class)
+	public ResponseEntity<?> validationApiException(CustomValidationApiException e) { // 제네릭타입 리턴할때는 ?로 적는게 간편함
+		return new ResponseEntity<>(new CMRespDto<>(
+				-1, e.getMessage(), e.gerErrorMap()), HttpStatus.BAD_REQUEST);
 	}
 }

@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity // DB에 테이블을 생성
 public class User {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO) // 번호 증가 전략이 데이터베이스를 따라간다. MySQL=AUTO, 오라클=SEQUENCE, MariaDB=IDENTITY
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // 번호 증가 전략이 데이터베이스를 따라간다. MySQL=AUTO, 오라클=SEQUENCE, MariaDB=IDENTITY
 	private int id;
 
 	@Column(length=20, unique=true) // 스키마(table)이 변경된것이기 때문에 단순 저장만해서는 반영되지 않는다.
