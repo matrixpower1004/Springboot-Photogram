@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.matrix.photogram.handler.ex.CustomApiException;
 import com.matrix.photogram.handler.ex.CustomValidationApiException;
 import com.matrix.photogram.handler.ex.CustomValidationException;
 import com.matrix.photogram.util.Script;
@@ -29,5 +30,11 @@ public class ControllerExceptionHandler {
 	public ResponseEntity<?> validationApiException(CustomValidationApiException e) { // 제네릭타입 리턴할때는 ?로 적는게 간편함
 		return new ResponseEntity<>(new CMRespDto<>(
 				-1, e.getMessage(), e.gerErrorMap()), HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(CustomApiException.class)
+	public ResponseEntity<?> apiException(CustomApiException e) { // 제네릭타입 리턴할때는 ?로 적는게 간편함
+		return new ResponseEntity<>(new CMRespDto<>(
+				-1, e.getMessage(),null), HttpStatus.BAD_REQUEST);
 	}
 }
