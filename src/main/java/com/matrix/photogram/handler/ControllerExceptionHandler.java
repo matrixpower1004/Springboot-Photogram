@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.matrix.photogram.handler.ex.CustomApiException;
+import com.matrix.photogram.handler.ex.CustomException;
 import com.matrix.photogram.handler.ex.CustomValidationApiException;
 import com.matrix.photogram.handler.ex.CustomValidationException;
 import com.matrix.photogram.util.Script;
@@ -23,8 +24,18 @@ public class ControllerExceptionHandler {
 		// 1.클라이언트에게 응답할 때는 Script가 좋음.
 		// 2.Ajax통신 - CMRespDto
 		// 3.Android통신 - CMRespDto
-		return Script.back(e.gerErrorMap().toString());
+		if (e.getErrorMap() == null) {
+			return Script.back(e.getMessage());
+		} else {
+			return Script.back(e.getErrorMap().toString());
+		}
 	}
+	
+	@ExceptionHandler(CustomException.class)
+	public String validationException(CustomException e) {
+		return Script.back(e.getMessage().toString());
+	}
+	
 	
 	@ExceptionHandler(CustomValidationApiException.class)
 	public ResponseEntity<?> validationApiException(CustomValidationApiException e) { // 제네릭타입 리턴할때는 ?로 적는게 간편함
