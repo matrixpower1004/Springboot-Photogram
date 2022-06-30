@@ -4,10 +4,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.matrix.photogram.domain.subscribe.SubscribeRepository;
 import com.matrix.photogram.domain.user.User;
 import com.matrix.photogram.domain.user.UserRepository;
 import com.matrix.photogram.handler.ex.CustomException;
 import com.matrix.photogram.handler.ex.CustomValidationApiException;
+import com.matrix.photogram.web.api.SubscribeApiController;
 import com.matrix.photogram.web.dto.user.UserProfileDto;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final SubscribeRepository subscribeRepository;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	@Transactional(readOnly = true) // select할 때도 @Transactional을 걸어 주면 좋다.
@@ -31,7 +34,13 @@ public class UserService {
 		dto.setUser(userEntity);
 		dto.setPageOwnerState(pageUserId == principalId);
 		dto.setImageCount(userEntity.getImages().size());
-				
+		
+		int subscribeState = subscribeRepository.mSubscribeState(principalId, pageUserId);
+		int subscribeCount = subscribeRepository.mSubscribeCount(pageUserId);
+		
+		dto.setSubscribeState(subscribeState == 1);
+		dto.setSubscribeCount(subscribeCount);
+		
 		return dto;
 	}
 	
