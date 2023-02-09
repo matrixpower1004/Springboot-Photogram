@@ -15,7 +15,7 @@ function storyLoad() {
 		url: `/api/image?page=${page}`, // 백틱임
 		dataType: "json"
 	}).done(res => {
-		console.log(res);
+		//console.log(res);
 		res.data.content.forEach((image)=>{
 			let storyItem = getStoryItem(image);
 			$("#storyList").append(storyItem);
@@ -44,12 +44,19 @@ function getStoryItem(image) {
 	<div class="sl__item__contents">
 		<div class="sl__item__contents__icon">
 
-			<button>
-				<i class="fas fa-heart active" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>
+			<button>`;
+				
+				if(image.likeState) {
+					item += `<i class="fas fa-heart active" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>`;
+				} else {
+					item += `<i class="far fa-heart" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>`;					
+				}
+				
+		item +=`		
 			</button>
 		</div>
 
-		<span class="like"><b id="storyLikeCount-1">3 </b>likes</span>
+		<span class="like"><b id="storyLikeCount-${image.id}">${image.likeCount} </b>likes</span>
 
 		<div class="sl__item__contents__content">
 			<p>${image.caption}</p>
@@ -88,7 +95,7 @@ $(window).scroll(() => {
 	
 	let checkNum = ($(window).scrollTop()) - ($(document).height() - $(window).height());
 	console.log(checkNum);
-	if(checkNum < 1 && checkNum > -1) {
+	if(checkNum < 10 && checkNum > -10) {
 		page++;
 		storyLoad();
 	}
@@ -99,14 +106,45 @@ $(window).scroll(() => {
 // (3) 좋아요, 안좋아요
 function toggleLike(imageId) {
 	let likeIcon = $(`#storyLikeIcon-${imageId}`);
-	if (likeIcon.hasClass("far")) {
-		likeIcon.addClass("fas");
-		likeIcon.addClass("active");
-		likeIcon.removeClass("far");
-	} else {
-		likeIcon.removeClass("fas");
-		likeIcon.removeClass("active");
-		likeIcon.addClass("far");
+	
+	//far : 속이 빈 heart / fas : 속이 찬 heart
+	if (likeIcon.hasClass("far")) {	//far일때 클릭하면 좋아요를 하겠다
+		
+		$.ajax({
+			type: "post",
+			url: `/api/image/${imageId}/likes`,
+			dataType: "json" 
+		}).done(res => {
+			//성공했다면 heart를 빨간색이 채워진 모양으로 바꾸기
+			let likeCountStr = $(`#storyLikeCount-${imageId}`).text();
+			let likeCount = Number(likeCountStr) + 1;	//Number로 캐스팅한 후 +1
+			$(`#storyLikeCount-${imageId}`).text(likeCount);
+			//console.log("좋아요카운트", likeCount);
+			
+			likeIcon.addClass("fas");
+			likeIcon.addClass("active");
+			likeIcon.removeClass("far");
+		}).fail(error => {
+			console.log("오류", error);
+		});
+	} else {	//좋아요를 취소하겠다
+		$.ajax({
+			type: "delete",
+			url: `/api/image/${imageId}/likes`,
+			dataType: "json" 
+		}).done(res => {
+			//성공했다면 heart를 빈 모양으로 바꾸기
+			let likeCountStr = $(`#storyLikeCount-${imageId}`).text();
+			let likeCount = Number(likeCountStr) - 1;	//Number로 캐스팅한 후 -1
+			$(`#storyLikeCount-${imageId}`).text(likeCount);
+			
+			likeIcon.removeClass("fas");
+			likeIcon.removeClass("active");
+			likeIcon.addClass("far");
+		}).fail(error => {
+			console.log("오류", error);
+		});
+		
 	}
 }
 

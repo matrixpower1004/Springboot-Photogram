@@ -1,6 +1,7 @@
 package com.matrix.photogram.domain.image;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,9 +10,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.matrix.photogram.domain.likes.Likes;
 import com.matrix.photogram.domain.user.User;
 
 import lombok.AllArgsConstructor;
@@ -41,10 +45,21 @@ public class Image { // N : 1 , 한명의 유저는 몇 개의 이미지를 등�
 	하나의 이미지는 몇 명의 유저가 만들어 낼 수 있나? 1 : 1 */
 	
 	//이미지 좋아요
+	//좋아요 정보를 가지고 오려면 양방향 매핑을 해야한다
+	//Likes 객체를 반환할 때 다시 Image 객체를 반환하지 않도록. 무한 참조 방지
+	@JsonIgnoreProperties({"image"})
+	@OneToMany(mappedBy = "image")	//하나의 이미지는 여러개의 좋아요를 받을 수 있음
+	private List<Likes> likes;
 	
 	//댓글
 	
 	private LocalDateTime createDate;
+	
+	@Transient	//DB에 칼럼이 만들어지지 않는다
+	private boolean likeState;
+	
+	@Transient
+	private int likeCount;
 
 	@PrePersist
 	public void createDate() { // DB에는 항상 시간이 들어가야 한다. 데이터가 언제 들어갔는지
