@@ -2,7 +2,9 @@
 function update(userId, event) {
 	event.preventDefault(); // 폼태그 액션을 막기!!
 	
-	let data = $("#profileUpdate").serialize();
+	//form data는 사진과 일반 문자들을 섞어서 보낼 때 사용하고,
+	//일반적인 문자 form data를 key/value 형태로 전송하려면 serialize를 사용한다. 
+	let data = $("#profileUpdate").serialize();	//key=value 형식으로 받아올 때 사용
 
 	// console.log(data);
 

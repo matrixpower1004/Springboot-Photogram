@@ -3,6 +3,7 @@ package com.matrix.photogram.service;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -72,6 +73,11 @@ public class ImageService {
 		
 		// System.out에 이런 코드는 좋지 않다. 처음에 테스할 때만 사용하고 모두 주석처리하거나 삭제한다.
 //		System.out.println(imageEntity);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Image> popularPhoto() {
+		return imageRepository.mPopular();
 	}
 
 }
