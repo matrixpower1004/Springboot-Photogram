@@ -11,10 +11,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.PrePersist;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.matrix.photogram.domain.comment.Comment;
 import com.matrix.photogram.domain.likes.Likes;
 import com.matrix.photogram.domain.user.User;
 
@@ -51,9 +53,11 @@ public class Image { // N : 1 , 한명의 유저는 몇 개의 이미지를 등�
 	@OneToMany(mappedBy = "image")	//하나의 이미지는 여러개의 좋아요를 받을 수 있음
 	private List<Likes> likes;
 	
-	//댓글
-	
-	private LocalDateTime createDate;
+	//댓글 : 연관관계의 foreign key는 Comment - Image - image
+	@OrderBy("id DESC") //javax.persistence.OrderBy
+	@JsonIgnoreProperties({"image"}) //무한참조 방지
+	@OneToMany(mappedBy = "image") //foreign key에 대한 java 변수
+	private List<Comment> comments;
 	
 	@Transient	//DB에 칼럼이 만들어지지 않는다
 	private boolean likeState;
@@ -61,6 +65,8 @@ public class Image { // N : 1 , 한명의 유저는 몇 개의 이미지를 등�
 	@Transient
 	private int likeCount;
 
+	private LocalDateTime createDate;
+	
 	@PrePersist
 	public void createDate() { // DB에는 항상 시간이 들어가야 한다. 데이터가 언제 들어갔는지
 		this.createDate = LocalDateTime.now();

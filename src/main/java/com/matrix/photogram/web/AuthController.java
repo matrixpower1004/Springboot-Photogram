@@ -48,15 +48,15 @@ public class AuthController {
 	// 회원가입버튼 X -> 동작하지 않은 상태
 	@PostMapping("/auth/signup")
 	public String signup(@Valid SignupDto signupDto, BindingResult bindingResult) { //key=value(x-www-form-urlencoded) -> 스프링에서 기본적으로 데이터를 받아주는 방식
-		// 리턴 타입 앞에 @Responsebody가 있으면 Controller이긴 해도 data를 응답한다.
+		//리턴 타입 앞에 @Responsebody가 있으면 Controller이긴 해도 data를 응답한다.
 		if (bindingResult.hasErrors()) {
 			Map<String, String> errorMap = new HashMap<>();
 			
 			for (FieldError error : bindingResult.getFieldErrors()) {
 				errorMap.put(error.getField(), error.getDefaultMessage());
-				System.out.println("==============================================");
-				System.out.println(error.getDefaultMessage());
-				System.out.println("==============================================");
+//				System.out.println("==============================================");
+//				System.out.println(error.getDefaultMessage());
+//				System.out.println("==============================================");
 			}
 			throw new CustomValidationException("유효성검사 실패함", errorMap);
 

@@ -60,7 +60,8 @@ public class UserApiController {
 	
 	@PutMapping("/api/user/{id}")
 	public CMRespDto<?> update(@PathVariable int id,
-			@Valid UserUpdateDto userUpdateDto, BindingResult bindingResult, // 꼭 @Valid가 적혀있는 다음 파라메터에 적어야 함.
+			@Valid UserUpdateDto userUpdateDto,
+			BindingResult bindingResult, // 꼭 @Valid가 적혀있는 다음 파라메터에 적어야 함.
 			@AuthenticationPrincipal PrincipalDetails principalDetails) { // js에서 보내는 값들을 받기 위한 data transfer object가 필요함
 		
 		if (bindingResult.hasErrors()) {

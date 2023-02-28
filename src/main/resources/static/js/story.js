@@ -7,6 +7,9 @@
 	(5) 댓글삭제
  */
 
+// (0) 현재 로그인한 사용자 아이디
+let principalId = $("#principalId").val();
+
 // (1) 스토리 로드하기
 let page = 0;
 
@@ -16,7 +19,7 @@ function storyLoad() {
 		dataType: "json"
 	}).done(res => {
 		//console.log(res);
-		res.data.content.forEach((image)=>{
+		res.data.content.forEach((image) => {
 			let storyItem = getStoryItem(image);
 			$("#storyList").append(storyItem);
 		});
@@ -45,14 +48,14 @@ function getStoryItem(image) {
 		<div class="sl__item__contents__icon">
 
 			<button>`;
-				
-				if(image.likeState) {
-					item += `<i class="fas fa-heart active" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>`;
-				} else {
-					item += `<i class="far fa-heart" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>`;					
-				}
-				
-		item +=`		
+
+	if (image.likeState) {
+		item += `<i class="fas fa-heart active" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>`;
+	} else {
+		item += `<i class="far fa-heart" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>`;
+	}
+
+	item += `		
 			</button>
 		</div>
 
@@ -62,24 +65,30 @@ function getStoryItem(image) {
 			<p>${image.caption}</p>
 		</div>
 
-		<div id="storyCommentList-1">
+		<div id="storyCommentList-${image.id}">`;
 
-			<div class="sl__item__contents__comment" id="storyCommentItem-1"">
+	image.comments.forEach((comment) => {
+		item += `<div class="sl__item__contents__comment" id="storyCommentItem-${comment.id}">
 				<p>
-					<b>Lovely :</b> 부럽습니다.
-				</p>
+					<b>${comment.user.username} :</b> ${comment.content}
+				</p>`;
 
-				<button>
-					<i class="fas fa-times"></i>
-				</button>
+		if (principalId == comment.user.id) {
+			item += `<button onclick="deleteComment(${comment.id})">
+								<i class="fas fa-times"></i>
+							 </button>`;
+		}
 
-			</div>
+		item += `	
+			</div>`;
+	});
 
+	item += `
 		</div>
 
 		<div class="sl__item__input">
-			<input type="text" placeholder="댓글 달기..." id="storyCommentInput-1" />
-			<button type="button" onClick="addComment()">게시</button>
+			<input type="text" placeholder="댓글 달기..." id="storyCommentInput-${image.id}" />
+			<button type="button" onClick="addComment(${image.id})">게시</button>
 		</div>
 
 	</div>
@@ -89,38 +98,39 @@ function getStoryItem(image) {
 
 // (2) 스토리 스크롤 페이징하기
 $(window).scroll(() => {
-//	console.log("windows scrollTop",$(window).scrollTop());
-//	console.log("document height",$(document).height());
-//	console.log("window height",$(window).height());
-	
+	//	console.log("windows scrollTop",$(window).scrollTop());
+	//	console.log("document height",$(document).height());
+	//	console.log("window height",$(window).height());
+
 	let checkNum = ($(window).scrollTop()) - ($(document).height() - $(window).height());
-	console.log(checkNum);
-	if(checkNum < 10 && checkNum > -10) {
+	//console.log(checkNum);
+
+	if (checkNum < 1 && checkNum > -1) {
 		page++;
 		storyLoad();
 	}
-		 
+
 });
 
 
 // (3) 좋아요, 안좋아요
 function toggleLike(imageId) {
 	let likeIcon = $(`#storyLikeIcon-${imageId}`);
-	
+
 	//far : 속이 빈 heart / fas : 속이 찬 heart
 	if (likeIcon.hasClass("far")) {	//far일때 클릭하면 좋아요를 하겠다
-		
+
 		$.ajax({
 			type: "post",
 			url: `/api/image/${imageId}/likes`,
-			dataType: "json" 
+			dataType: "json"
 		}).done(res => {
 			//성공했다면 heart를 빨간색이 채워진 모양으로 바꾸기
 			let likeCountStr = $(`#storyLikeCount-${imageId}`).text();
 			let likeCount = Number(likeCountStr) + 1;	//Number로 캐스팅한 후 +1
 			$(`#storyLikeCount-${imageId}`).text(likeCount);
 			//console.log("좋아요카운트", likeCount);
-			
+
 			likeIcon.addClass("fas");
 			likeIcon.addClass("active");
 			likeIcon.removeClass("far");
@@ -131,56 +141,87 @@ function toggleLike(imageId) {
 		$.ajax({
 			type: "delete",
 			url: `/api/image/${imageId}/likes`,
-			dataType: "json" 
+			dataType: "json"
 		}).done(res => {
 			//성공했다면 heart를 빈 모양으로 바꾸기
 			let likeCountStr = $(`#storyLikeCount-${imageId}`).text();
 			let likeCount = Number(likeCountStr) - 1;	//Number로 캐스팅한 후 -1
 			$(`#storyLikeCount-${imageId}`).text(likeCount);
-			
+
 			likeIcon.removeClass("fas");
 			likeIcon.removeClass("active");
 			likeIcon.addClass("far");
 		}).fail(error => {
 			console.log("오류", error);
 		});
-		
+
 	}
 }
 
 // (4) 댓글쓰기
-function addComment() {
+function addComment(imageId) {
 
-	let commentInput = $("#storyCommentInput-1");
-	let commentList = $("#storyCommentList-1");
+	let commentInput = $(`#storyCommentInput-${imageId}`);
+	let commentList = $(`#storyCommentList-${imageId}`);
 
 	let data = {
+		imageId: imageId,
 		content: commentInput.val()
 	}
 
+	//console.log(data);
+	//console.log(JSON.stringify(data));
+	
 	if (data.content === "") {
 		alert("댓글을 작성해주세요!");
 		return;
 	}
+	
+	$.ajax({
+		type: "post",
+		url: "/api/comment",
+		data: JSON.stringify(data),
+		contentType: "application/json; charset=utf-8",
+		dataType: "json"
+	}).done(res => {
+		//console.log("성공", res);
 
-	let content = `
-			  <div class="sl__item__contents__comment" id="storyCommentItem-2""> 
-			    <p>
-			      <b>GilDong :</b>
-			      댓글 샘플입니다.
-			    </p>
-			    <button><i class="fas fa-times"></i></button>
-			  </div>
-	`;
-	commentList.prepend(content);
-	commentInput.val("");
+		let comment = res.data;
+
+		let content = `
+		  <div class="sl__item__contents__comment" id="storyCommentItem-${comment.id}"> 
+		    <p>
+		      <b>${comment.user.username} :</b>
+		      ${comment.content}
+		    </p>
+		    <button onclick="deleteComment(${comment.id})"><i class="fas fa-times"></i></button>
+		  </div>
+		`;
+		commentList.prepend(content);
+
+	}).fail(error => {
+		console.log("오류", error.responseJSON.data.content);
+		alert(error.responseJSON.data.content);
+	});
+
+
+
+	commentInput.val(""); //댓글 작성이 끝나면 input filed를 깨끗하게 비워준다.
 }
 
 // (5) 댓글 삭제
-function deleteComment() {
-
+function deleteComment(commentId) {
+	$.ajax({
+		type: "delete",
+		url: `/api/comment/${commentId}`,
+		dataType: "json"
+	}).done(res => {
+		console.log("성공", res);
+		$(`#storyCommentItem-${commentId}`).remove();
+	}).fail(error => {
+		console.log("오류", error);
+	});
 }
-
 
 
 
