@@ -38,15 +38,6 @@ public class CommenbtApiController {
 		//x-www-form-urlencoded 포맷으로 받는 데이터만 DTO로 받을 수 있다.
 		//현재 로그인한 유저가 댓글을 작성했을 것이므로 세션에 있는 로그인한 유저의 정보를 @AuthenticationPrincipal로 받아온다.
 		
-		if (bindingResult.hasErrors()) {
-			Map<String, String> errorMap = new HashMap<>();
-			
-			for (FieldError error : bindingResult.getFieldErrors()) {
-				errorMap.put(error.getField(), error.getDefaultMessage());
-			}
-			throw new CustomValidationApiException("유효성검사 실패함", errorMap);
-		}
-		
 		Comment comment = commentService.writeComment(commentDto.getContent(), commentDto.getImageId(), principalDetails.getUser().getId());
 		//method 호출시 인자로 넘겨줄 content, imageId, userId가 필요
 		return new ResponseEntity<>(new CMRespDto<>(1, "댓글쓰기 성공", comment), HttpStatus.CREATED);

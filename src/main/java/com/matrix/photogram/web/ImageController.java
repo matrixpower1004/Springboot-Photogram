@@ -46,11 +46,12 @@ public class ImageController {
 	@PostMapping("/image")
 	public String imageUpload(ImageUploadDto imageUploadDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		
+		//공통처리 불가능한 부분
 		if (imageUploadDto.getFile().isEmpty()) {
 			throw new CustomValidationException("이미지가 첨부되지 않았습니다.", null);
 		}
+		
 		// Image에서 caption과 postImage 파일을 받아와야 함
-		// 서비스 호출
 		imageService.photoUpload(imageUploadDto, principalDetails);
 		return "redirect:/user/"+principalDetails.getUser().getId();
 		// 이미지 업로드 완료 후 현재 로그인한 유저의 id 프로필 페이지로 돌아가기 -> /user/id

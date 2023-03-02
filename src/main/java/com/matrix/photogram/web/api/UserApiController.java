@@ -64,17 +64,8 @@ public class UserApiController {
 			BindingResult bindingResult, // 꼭 @Valid가 적혀있는 다음 파라메터에 적어야 함.
 			@AuthenticationPrincipal PrincipalDetails principalDetails) { // js에서 보내는 값들을 받기 위한 data transfer object가 필요함
 		
-		if (bindingResult.hasErrors()) {
-			Map<String, String> errorMap = new HashMap<>();
-			
-			for (FieldError error : bindingResult.getFieldErrors()) {
-				errorMap.put(error.getField(), error.getDefaultMessage());
-			}
-			throw new CustomValidationApiException("유효성검사 실패함", errorMap);
-		} else {
-			User userEntity = userService.memberUpdate(id, userUpdateDto.toEntity());
-			principalDetails.setUser(userEntity); // 세션정보변경
-			return new CMRespDto<>(1,"회원수정완료", userEntity); // 응답시에 userEntity의 모든 getter 함수가 호출되고 JSON으로 파싱하여 응답한다.
-		}
+		User userEntity = userService.memberUpdate(id, userUpdateDto.toEntity());
+		principalDetails.setUser(userEntity); // 세션정보변경
+		return new CMRespDto<>(1,"회원수정완료", userEntity); // 응답시에 userEntity의 모든 getter 함수가 호출되고 JSON으로 파싱하여 응답한다.
 	}
 }
