@@ -7,10 +7,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.matrix.photogram.cofig.oauth.OAuth2DetailsService;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @EnableWebSecurity //해당 파일로 시큐리티를 활성화 
 @Configuration //IoC
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
+	private final OAuth2DetailsService oAuth2DetailsService;
+	
 	@Bean // SecurityConfig가 IoC에 등록될 때 @Bean 어노테이션을 읽어서 메모리에 들고 있음 -> DI해서 쓰기만 하면 된다
 	public BCryptPasswordEncoder encode() {
 		return new BCryptPasswordEncoder();
@@ -27,6 +34,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 			.formLogin()
 			.loginPage("/auth/signin") // GET
 			.loginProcessingUrl("/auth/signin")// POST -> 스프링 시큐리티가 로그인 프로세스 진행
-			.defaultSuccessUrl("/");
+			.defaultSuccessUrl("/")
+			.and()
+			.oauth2Login() //form 로그인도 하는데, oauth2 로그인도 할꺼야. 
+			.userInfoEndpoint() //oauth2 로그인을 하면 최종 응답을 회원정보로 바로 받을 수 있다. 
+			.userService(oAuth2DetailsService);
 	}
 }

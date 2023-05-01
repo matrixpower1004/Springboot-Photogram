@@ -32,7 +32,8 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // 번호 증가 전략이 데이터베이스를 따라간다. MySQL=AUTO, 오라클=SEQUENCE, MariaDB=IDENTITY
 	private int id;
 
-	@Column(length=20, unique=true) // 스키마(table)이 변경된것이기 때문에 단순 저장만해서는 반영되지 않는다.
+	// 스키마(table)이 변경된것이기 때문에 단순 저장만해서는 반영되지 않는다.
+	@Column(length=100, unique=true) //OAuth2 로그인을 위한 컬럼 늘리기
 	private String username;
 	@Column(nullable=false)
 	private String password;

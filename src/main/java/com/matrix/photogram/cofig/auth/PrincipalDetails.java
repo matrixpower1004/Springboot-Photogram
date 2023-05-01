@@ -2,22 +2,31 @@ package com.matrix.photogram.cofig.auth;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.matrix.photogram.domain.user.User;
 
 import lombok.Data;
 
 @Data
-public class PrincipalDetails implements UserDetails {
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
 	private static final long serialVersionUID = 1L;
 
 	private User user;
+	private Map<String, Object> attributes;
 
+	//일반 로그인에 사용할 생성자
 	public PrincipalDetails(User user) {
+		this.user = user;
+	}
+	
+	//OAuth2 로그인 했을 때 사용할 생성자
+	public PrincipalDetails(User user, Map<String, Object> attributes) {
 		this.user = user;
 	}
 	
@@ -64,6 +73,20 @@ public class PrincipalDetails implements UserDetails {
 	@Override
 	public boolean isEnabled() { // 계정 활성화 여부
 		return true;
+	}
+
+	//OAuth2로 로그인을 했다면 attributes 정보들이 존재한다.
+	@Override
+	public Map<String, Object> getAttributes() {
+		// TODO Auto-generated method stub
+		return attributes; //페이스북에서 넘어온 유저 정보 {id, name, email}
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+//		return (String) attributes.get("name");
+		return attributes.get("name").toString();
 	}
 
 }
