@@ -1,15 +1,11 @@
 package com.matrix.photogram.web.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.matrix.photogram.cofig.auth.PrincipalDetails;
 import com.matrix.photogram.domain.comment.Comment;
-import com.matrix.photogram.handler.ex.CustomValidationApiException;
 import com.matrix.photogram.service.CommentService;
 import com.matrix.photogram.web.dto.CMRespDto;
 import com.matrix.photogram.web.dto.comment.CommentDto;
@@ -27,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-public class CommenbtApiController {
+public class CommentApiController {
 	
 	private final CommentService commentService;
 
