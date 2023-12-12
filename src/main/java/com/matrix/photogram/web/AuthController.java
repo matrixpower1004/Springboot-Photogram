@@ -15,19 +15,14 @@ import com.matrix.photogram.web.dto.auth.SignupDto;
 
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor // final 필드를 DI할때 사용.
+@RequiredArgsConstructor // final 필드를 DI할 때 사용.
 @Controller //1.IoC 2.파일을 리턴하는 컨트롤러
 public class AuthController {
 	
 	private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 	
-	// 전역변수에 final이 걸려 있으면 무조건 생성자가 실행될 때 또는 객체가 만들어질 때 초기화를 해줘야 함  
+	// 전역변수에 final이 걸려 있으면 무조건 생성자가 실행될 때 또는 객체가 생성될 때 초기화를 해줘야 함
 	private final AuthService authService;
-	
-	// Autowired를 붙이거나 생성자를 직접 만들어야 한다.
-//	public AuthController(AuthService authService) {
-//		this.authService = authService;
-//	}
 	
 	@GetMapping("/auth/signin")
 	public String signinForm() {

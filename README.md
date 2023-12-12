@@ -1,97 +1,29 @@
-# Demo Project - 인스타그램 클론 코딩
+# 인스타그램 클론 SNS 프로젝트
 
-### 의존성
+## ERD
+![sns_erd](https://github.com/matrixpower1004/Springboot-Photogram/assets/104916288/cfe91df2-ec94-4e8e-95e7-7f3998e33dd9)
+https://www.erdcloud.com/d/uC6uYFLHoHed4huum
 
-- Sring Boot DevTools
-- Lombok
-- Spring Data JPA
-- MySQL DB Driver
-- Spring Security
-- Spring Web
-- oauth2-client
+## API 명세서
+https://mindextender.notion.site/API-31f082627a2a45b9b3c2a92a542aa032?pvs=4
 
+## 기술 스택
+| Backend | Java 8, Spring boot 2.6.6, Maven, Spring Security, JPA, Oauth 2.0 Client, QLRM, MySQL |
+| --- | --- |
+| Frontend(SSR) | JSP, JSTL, jQuery, JavaScript, Bootstrap 4 |
 
-### Maven 설정
+## 프로젝트 주요 내용
+- 인스타그램 기능 구현을 통한 Java, Spring 관련 기술 학습 목적
+- 구독 Feed, 좋아요, 구독, 회원 가입 등 주요 기능을 구현
+- OAuth 2.0 Facebook login 적용
+- 기본 로그인과 OAuth 2.0 로그인 세션 통합 관리
+- Custom Exception Handling
+- Reflection을 통한 유효성 검사 및 AOP를 이용한 유효성 검사 자동화
 
-```xml
-<!-- 시큐리티 태그 라이브러리 -->
-<dependency>
-	<groupId>org.springframework.security</groupId>
-	<artifactId>spring-security-taglibs</artifactId>
-</dependency>
+## 프로젝트에서 아쉬운 점
+- Entity가 API에 직접 노출되는 현재의 설계가 적절한가?
+- 양방향 매핑이 꼭 필요한가?
+- 테스트 코드의 커버리지는 적절한가?
+- AWS에 배포 후 부하 테스트 진행 필요.
+- AWS에 배포시 사진 저장소를 AWS S3로 바꾸고 이미지 리사이징 배치 필요.
 
-<!-- JSP 템플릿 엔진 -->
-<dependency>
-	<groupId>org.apache.tomcat</groupId>
-	<artifactId>tomcat-jasper</artifactId>
-	<version>9.0.43</version>
-</dependency>
-
-<!-- JSTL -->
-<dependency>
-	<groupId>javax.servlet</groupId>
-	<artifactId>jstl</artifactId>
-</dependency>
-
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-aop</artifactId>
-</dependency>
-
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-validation</artifactId>
-</dependency>
-```
-
-### yml 설정
-
-```yml
-server:
-  port: 8080
-  servlet:
-    context-path: /
-    encoding:
-      charset: utf-8
-      enabled: true
-    
-spring:
-  mvc:
-    view:
-      prefix: /WEB-INF/views/
-      suffix: .jsp
-      
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/costa?serverTimezone=Asia/Seoul
-    username: costa
-    password: costa1234
-    
-  jpa:
-    open-in-view: true
-    hibernate:
-      ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true
-      
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 2MB
-
-  security:
-    user:
-      name: test
-      password: 1234   
-
-file:
-  path: D:/workspace/springboot/upload/
-```
-
-### 태그라이브러리
-
-```jsp
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
-```
